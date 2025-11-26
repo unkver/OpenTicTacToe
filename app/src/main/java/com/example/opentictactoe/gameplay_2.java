@@ -4,9 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 
 public class gameplay_2 extends AppCompatActivity {
     @Override
@@ -16,12 +14,12 @@ public class gameplay_2 extends AppCompatActivity {
     }
     int turn = 0;
     String[][] board = new String[3][3];
-    private void disableAllButtons() {
-        int[] ids = {
-                R.id.button00, R.id.button01, R.id.button02,
-                R.id.button10, R.id.button11, R.id.button12,
-                R.id.button20, R.id.button21, R.id.button22
-        };
+    int[] ids = {
+            R.id.button00, R.id.button01, R.id.button02,
+            R.id.button10, R.id.button11, R.id.button12,
+            R.id.button20, R.id.button21, R.id.button22
+    };
+    private void disableAllButtons(int[] ids) {
         for (int id : ids) {
             findViewById(id).setEnabled(false);
         }
@@ -58,7 +56,6 @@ public class gameplay_2 extends AppCompatActivity {
                 if (board[r][c] == null) return false;
             }
         }
-        // If no empty cells AND no win → it's a draw
         return !checkWin(board);
     }
     public void onPress(View v){
@@ -68,7 +65,6 @@ public class gameplay_2 extends AppCompatActivity {
         int row = Character.getNumericValue(tag.charAt(0));
         int col = Character.getNumericValue(tag.charAt(2));
 
-        // Set X and O accordingly
         if (turn == 0) {
             board[row][col] = "X";
             b.setText("X");
@@ -78,13 +74,13 @@ public class gameplay_2 extends AppCompatActivity {
             b.setText("O");
             tv.setText("It's X's turn!");
         }
-        // Then make the button disabled
+
         v.setEnabled(false);
-        // Then check for a win
+
         if (checkWin(board)) {
             tv.setText(turn == 0 ? "X wins!" : "O wins!");
             // Disable all buttons since we won
-            disableAllButtons();
+            disableAllButtons(ids);
             return;
         }
         if (checkDraw(board)) {

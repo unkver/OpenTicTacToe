@@ -9,23 +9,30 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
-
 public class gameplay_ai extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gameplay_2);
+        setContentView(R.layout.activity_gameplay_ai);
+        setBoardVisibility(View.GONE, ids);
     }
     int turn = 0;
+    String playerSymbol;
+    String aiSymbol;
     String[][] board = new String[3][3];
-    private void disableAllButtons() {
-        int[] ids = {
-                R.id.button00, R.id.button01, R.id.button02,
-                R.id.button10, R.id.button11, R.id.button12,
-                R.id.button20, R.id.button21, R.id.button22
-        };
+    int[] ids = {
+            R.id.button00, R.id.button01, R.id.button02,
+            R.id.button10, R.id.button11, R.id.button12,
+            R.id.button20, R.id.button21, R.id.button22
+    };
+    private void disableAllButtons(int[] ids) {
         for (int id : ids) {
             findViewById(id).setEnabled(false);
+        }
+    }
+    private void setBoardVisibility(int visibility, int[] ids) {
+        for (int id : ids) {
+            findViewById(id).setVisibility(visibility);
         }
     }
     public boolean checkWin(String[][] board) {
@@ -52,14 +59,29 @@ public class gameplay_ai extends AppCompatActivity {
         return false;
     }
     public boolean checkDraw(String[][] board) {
-        // If ANY cell is still null, it's not a draw
         for (int r = 0; r < 3; r++) {
             for (int c = 0; c < 3; c++) {
                 if (board[r][c] == null) return false;
             }
         }
-        // If no empty cells AND no win → it's a draw
         return !checkWin(board);
+    }
+    public void startAsX(View v){
+        playerSymbol = "X";
+        aiSymbol = "O";
+        findViewById(R.id.buttonStartX).setVisibility(View.GONE);
+        findViewById(R.id.buttonStartO).setVisibility(View.GONE);
+        setBoardVisibility(View.VISIBLE, ids);
+        TextView tv = findViewById(R.id.turnIndicator);
+        tv.setText("Your turn!");
+    }
+    public void startAsO(View v){
+        playerSymbol = "O";
+        aiSymbol = "X";
+        findViewById(R.id.buttonStartX).setVisibility(View.GONE);
+        findViewById(R.id.buttonStartO).setVisibility(View.GONE);
+        setBoardVisibility(View.VISIBLE, ids);
+        makeAIMove(findViewById(R.id.turnIndicator));
     }
     private void makeAIMove(TextView tv) {
         Random r = new Random();
@@ -71,53 +93,49 @@ public class gameplay_ai extends AppCompatActivity {
             col = r.nextInt(3);
         } while (board[row][col] != null);
 
-        // Get the button by ID
         String buttonID = "button" + row + col;
         int id = getResources().getIdentifier(buttonID, "id", getPackageName());
         Button b = findViewById(id);
 
-        // AI always plays O
-        board[row][col] = "O";
-        b.setText("O");
+        board[row][col] = aiSymbol;
+        b.setText(aiSymbol);
         b.setEnabled(false);
         tv.setText("Your turn!");
 
         if (checkWin(board)) {
-            tv.setText("O wins!");
-            disableAllButtons();
+            tv.setText(aiSymbol + " wins!");
+            disableAllButtons(ids);
             return;
         }
         if (checkDraw(board)) {
             tv.setText("It's a draw!");
-            disableAllButtons();
+            disableAllButtons(ids);
             return;
         }
         turn = 0; // Back to player
     }
     public void onPress(View v){
-        Button b = (Button) v;
-        TextView tv = findViewById(R.id.turnIndicator);
         String tag = (String) v.getTag();
         int row = Character.getNumericValue(tag.charAt(0));
         int col = Character.getNumericValue(tag.charAt(2));
-
-        // Set X and O accordingly
-        board[row][col] = "X";
-        b.setText("X");
+        Button b = (Button) v;
+        TextView tv = findViewById(R.id.turnIndicator);
+        board[row][col] = playerSymbol;
+        b.setText(playerSymbol);
         v.setEnabled(false);
 
         if (checkWin(board)) {
-            tv.setText("X wins!");
-            disableAllButtons();
+            tv.setText(playerSymbol + " wins!");
+            disableAllButtons(ids);
             return;
         }
         if (checkDraw(board)) {
             tv.setText("It's a draw!");
-            disableAllButtons();
+            disableAllButtons(ids);
             return;
         }
-        tv.setText("Thinking...");
 
+        tv.setText("Thinking...");
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
