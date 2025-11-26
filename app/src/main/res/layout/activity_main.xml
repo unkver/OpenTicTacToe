@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:background="#140C0C"
     android:backgroundTint="#433540"
+    android:splitMotionEvents="false"
     tools:context=".MainActivity">
 
     <TextView
@@ -75,9 +76,11 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="v0.0.2\nby unkver"
+        android:layout_marginBottom="16dp"
+        android:text="    v0.1\nby unkver"
         android:textColor="#EDEDED"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,14 +1,16 @@
 package com.example.opentictactoe;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
+import java.util.Random;
 
 
-public class gameplay_2 extends AppCompatActivity {
+public class gameplay_ai extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,14 +35,12 @@ public class gameplay_2 extends AppCompatActivity {
                     board[r][0].equals(board[r][1]) &&
                     board[r][1].equals(board[r][2])) return true;
         }
-
         // cols
         for (int c = 0; c < 3; c++) {
             if (board[0][c] != null &&
                     board[0][c].equals(board[1][c]) &&
                     board[1][c].equals(board[2][c])) return true;
         }
-
         // diag
         if (board[0][0] != null &&
                 board[0][0].equals(board[1][1]) &&
@@ -61,6 +61,39 @@ public class gameplay_2 extends AppCompatActivity {
         // If no empty cells AND no win → it's a draw
         return !checkWin(board);
     }
+    private void makeAIMove(TextView tv) {
+        Random r = new Random();
+        int row, col;
+
+        // Pick random empty position
+        do {
+            row = r.nextInt(3);
+            col = r.nextInt(3);
+        } while (board[row][col] != null);
+
+        // Get the button by ID
+        String buttonID = "button" + row + col;
+        int id = getResources().getIdentifier(buttonID, "id", getPackageName());
+        Button b = findViewById(id);
+
+        // AI always plays O
+        board[row][col] = "O";
+        b.setText("O");
+        b.setEnabled(false);
+        tv.setText("Your turn!");
+
+        if (checkWin(board)) {
+            tv.setText("O wins!");
+            disableAllButtons();
+            return;
+        }
+        if (checkDraw(board)) {
+            tv.setText("It's a draw!");
+            disableAllButtons();
+            return;
+        }
+        turn = 0; // Back to player
+    }
     public void onPress(View v){
         Button b = (Button) v;
         TextView tv = findViewById(R.id.turnIndicator);
@@ -69,29 +102,31 @@ public class gameplay_2 extends AppCompatActivity {
         int col = Character.getNumericValue(tag.charAt(2));
 
         // Set X and O accordingly
-        if (turn == 0) {
-            board[row][col] = "X";
-            b.setText("X");
-            tv.setText("It's O's turn!");
-        } else {
-            board[row][col] = "O";
-            b.setText("O");
-            tv.setText("It's X's turn!");
-        }
-        // Then make the button disabled
+        board[row][col] = "X";
+        b.setText("X");
         v.setEnabled(false);
-        // Then check for a win
+
         if (checkWin(board)) {
-            tv.setText(turn == 0 ? "X wins!" : "O wins!");
-            // Disable all buttons since we won
+            tv.setText("X wins!");
             disableAllButtons();
             return;
         }
         if (checkDraw(board)) {
             tv.setText("It's a draw!");
+            disableAllButtons();
             return;
         }
-        turn = (turn == 0 ? 1 : 0); // If no win, switch the turn so it's O's turn
+        tv.setText("Thinking...");
+
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        );
+        new Handler().postDelayed(() -> {
+            makeAIMove(tv);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }, 1200);
+        turn = 1; // AI turn
     }
     public void toMainMenu(View v){
         finish();
