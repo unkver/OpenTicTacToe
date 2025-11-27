@@ -1,5 +1,7 @@
 package com.example.opentictactoe;
 
+import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -7,6 +9,16 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class gameplay_2 extends AppCompatActivity {
+    public void clickSound(){
+        SharedPreferences prefs = getSharedPreferences("GameSettings", MODE_PRIVATE);
+        boolean soundEnabled = prefs.getBoolean("soundEnabled", true);
+
+        if (soundEnabled) {
+            final MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.buttonclick_01);
+            mediaPlayer.start();
+            mediaPlayer.setOnCompletionListener(MediaPlayer::release);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +71,7 @@ public class gameplay_2 extends AppCompatActivity {
         return !checkWin(board);
     }
     public void onPress(View v){
+        clickSound();
         Button b = (Button) v;
         TextView tv = findViewById(R.id.turnIndicator);
         String tag = (String) v.getTag();
@@ -90,9 +103,11 @@ public class gameplay_2 extends AppCompatActivity {
         turn = (turn == 0 ? 1 : 0); // If no win, switch the turn so it's O's turn
     }
     public void toMainMenu(View v){
+        clickSound();
         finish();
     }
     public void retry(View v){
+        clickSound();
         recreate();
     }
 }

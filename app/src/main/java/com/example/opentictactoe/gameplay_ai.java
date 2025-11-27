@@ -1,5 +1,7 @@
 package com.example.opentictactoe;
 
+import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -10,6 +12,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
 public class gameplay_ai extends AppCompatActivity {
+    public void clickSound(){
+        SharedPreferences prefs = getSharedPreferences("GameSettings", MODE_PRIVATE);
+        boolean soundEnabled = prefs.getBoolean("soundEnabled", true);
+
+        if (soundEnabled) {
+            final MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.buttonclick_01);
+            mediaPlayer.start();
+            mediaPlayer.setOnCompletionListener(MediaPlayer::release);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +79,7 @@ public class gameplay_ai extends AppCompatActivity {
         return !checkWin(board);
     }
     public void startAsX(View v){
+        clickSound();
         playerSymbol = "X";
         aiSymbol = "O";
         findViewById(R.id.buttonStartX).setVisibility(View.GONE);
@@ -76,6 +89,7 @@ public class gameplay_ai extends AppCompatActivity {
         tv.setText("Your turn!");
     }
     public void startAsO(View v){
+        clickSound();
         playerSymbol = "O";
         aiSymbol = "X";
         findViewById(R.id.buttonStartX).setVisibility(View.GONE);
@@ -115,6 +129,7 @@ public class gameplay_ai extends AppCompatActivity {
         turn = 0; // Back to player
     }
     public void onPress(View v){
+        clickSound();
         String tag = (String) v.getTag();
         int row = Character.getNumericValue(tag.charAt(0));
         int col = Character.getNumericValue(tag.charAt(2));
@@ -147,9 +162,11 @@ public class gameplay_ai extends AppCompatActivity {
         turn = 1; // AI turn
     }
     public void toMainMenu(View v){
+        clickSound();
         finish();
     }
     public void retry(View v){
+        clickSound();
         recreate();
     }
 }

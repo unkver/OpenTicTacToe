@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OpenTicTacToe">
         <activity
+            android:name=".settings"
+            android:exported="false" />
+        <activity
             android:name=".gameplay_ai"
             android:exported="false" />
         <activity
